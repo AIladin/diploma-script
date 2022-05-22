@@ -1,4 +1,4 @@
-from functools import cached_property, lru_cache
+from functools import lru_cache
 from typing import Callable
 
 import numpy as np
@@ -63,7 +63,7 @@ class CRRModelCalculator:
         self.payment_fuction = payment_function
         self.N = N
 
-    @cached_property
+    @property
     def p_star(self) -> float:
         return (self.model.b - self.model.r) / (self.model.b - self.model.a)
 
@@ -122,27 +122,3 @@ class CRRModelCalculator:
             self.get_discounted_capital(n - 1)
             - self.get_gamma(n) * self.model.stock_price_evolution(n - 1)
         ) / self.model.bank_account_evolution(n - 1)
-
-
-if __name__ == "__main__":
-    model = CRRModel(
-        s_0=100,
-        b_0=50,
-        a=-0.5,
-        b=0.5,
-        r=0.1,
-    )
-
-    N = 21
-    K = 10
-
-    def payment_function(x: np.ndarray) -> np.ndarray:
-        return (x - K).clip(min=0)
-
-    calculator = CRRModelCalculator(model, payment_function, N)
-    print("fair price: ", calculator.get_fair_price())
-    for n in range(1, N + 1):
-        print("gamma: ", calculator.get_gamma(n))
-        print("beta: ", calculator.get_beta(n))
-        print("discounted_captal: ", calculator.get_discounted_capital(n))
-        print()
