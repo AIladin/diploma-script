@@ -23,13 +23,13 @@ class CRRModel:
         self.b_0 = b_0
         self.r = r
 
-    @lru_cache
+    @lru_cache(maxsize=None)
     def bank_account_evolution(self, n: int) -> float:
         if n == 0:
             return self.b_0
         return self.bank_account_evolution(n - 1) * (1 + self.r)
 
-    @lru_cache
+    @lru_cache(maxsize=None)
     def stock_price_evolution(self, n: int) -> np.ndarray:
         if n == 0:
             return np.array([self.s_0])
@@ -47,7 +47,7 @@ class CRRModel:
 
 PAYMENT_FUCTION_TYPE = Callable[[np.ndarray], np.ndarray]
 
-cached_binom = lru_cache(binom)
+cached_binom = lru_cache(maxsize=None)(binom)
 
 
 class CRRModelCalculator:
@@ -81,7 +81,7 @@ class CRRModelCalculator:
             )
         return res
 
-    @lru_cache
+    @lru_cache(maxsize=None)
     def get_discounted_capital(self, n: int):
         assert 0 <= n <= self.N
         return (1 + self.model.r) ** (n - self.N) * self.f(
@@ -93,7 +93,7 @@ class CRRModelCalculator:
     def get_fair_price(self):
         return self.get_discounted_capital(0)
 
-    @lru_cache
+    @lru_cache(maxsize=None)
     def get_gamma(self, n: int):
         assert 1 <= n <= self.N
         stock_price_evolution = self.model.stock_price_evolution(n - 1)
@@ -115,7 +115,7 @@ class CRRModelCalculator:
             )
         )
 
-    @lru_cache
+    @lru_cache(maxsize=None)
     def get_beta(self, n: int):
         assert 1 <= n <= self.N
         return (
