@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
 from scipy.special import binom
@@ -82,11 +82,12 @@ class CRRModelCalculator:
         return res
 
     @lru_cache(maxsize=None)
-    def get_discounted_capital(self, n: int):
+    def get_discounted_capital(self, n: int) -> np.ndarray:
         assert 0 <= n <= self.N
+        stock_price_evolution = self.model.stock_price_evolution(n)
         return (1 + self.model.r) ** (n - self.N) * self.f(
             self.N - n,
-            self.model.stock_price_evolution(n),
+            stock_price_evolution,
             self.p_star,
         )
 
@@ -94,7 +95,10 @@ class CRRModelCalculator:
         return self.get_discounted_capital(0)
 
     @lru_cache(maxsize=None)
-    def get_gamma(self, n: int):
+    def get_gamma(
+        self,
+        n: int,
+    ) -> np.ndarray:
         assert 1 <= n <= self.N
         stock_price_evolution = self.model.stock_price_evolution(n - 1)
         return (
@@ -116,9 +120,55 @@ class CRRModelCalculator:
         )
 
     @lru_cache(maxsize=None)
-    def get_beta(self, n: int):
+    def get_beta(
+        self,
+        n: int,
+    ) -> np.ndarray:
         assert 1 <= n <= self.N
         return (
             self.get_discounted_capital(n - 1)
             - self.get_gamma(n) * self.model.stock_price_evolution(n - 1)
         ) / self.model.bank_account_evolution(n - 1)
+
+
+class CRRPlotter(CRRModelCalculator):
+    def get_gamma(
+        self,
+        n: int,
+        stock_price_evolution: np.ndarray,
+    ) -> np.ndarray:
+        assert 1 <= n <= self.N
+        return (
+            (1 + self.model.r) ** (n - self.N)
+            / stock_price_evolution
+            / (self.model.b - self.model.a)
+            * (
+                self.f(
+                    self.N - n,
+                    stock_price_evolution * (1 + self.model.b),
+                    self.p_star,
+                )
+                - self.f(
+                    self.N - n,
+                    stock_price_evolution * (1 + self.model.a),
+                    self.p_star,
+                )
+            )
+        )
+
+    def get_beta(
+        self,
+        n: int,
+        stock_price_evolution: np.ndarray,
+    ) -> np.ndarray:
+        assert 1 <= n <= self.N
+        return self.f(
+            self.N - n + 1, stock_price_evolution, self.p_star
+        ) / self.model.bank_account_evolution(self.N) - (1 + self.model.r) * (
+            self.f(self.N - n, stock_price_evolution * (1 + self.model.b), self.p_star)
+            - self.f(
+                self.N - n, stock_price_evolution * (1 + self.model.a), self.p_star
+            )
+        ) / (
+            self.model.bank_account_evolution(self.N) * (self.model.b - self.model.a)
+        )
