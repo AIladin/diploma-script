@@ -1,1 +1,1 @@
-from .full import FullTree
+from .full import FullBinaryTree

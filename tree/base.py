@@ -11,5 +11,4 @@ class Tree:
 
     def __iter__(self) -> Iterable[node_base.Node]:
         assert self.iter_strategy is not None, "Plase provide iter strategy."
-        with self.iter_strategy:
-            yield from self.iter_strategy.run(self.root)
+        yield from self.iter_strategy.run(self.root)

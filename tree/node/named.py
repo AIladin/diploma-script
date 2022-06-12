@@ -2,7 +2,6 @@ from typing import Optional
 
 import tree.node.base as base
 
-
 LAST_NODE_NAME = 0
 
 
@@ -18,5 +17,7 @@ class NamedNode(base.Node):
 
         super().__init__(**kwargs)
 
-    def __str__(self):
-        return self.name
+    def _dict_info(self):
+        dict_info = super()._dict_info()
+        dict_info.update({"name": self.name})
+        return dict_info
