@@ -9,6 +9,13 @@ class NodeType:
 
 
 class Node:
+    __slots__ = (
+        "node_type",
+        "parent",
+        "_omega_1_child",
+        "_omega_2_child",
+    )
+
     def __init__(
         self,
     ):

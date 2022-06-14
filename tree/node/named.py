@@ -6,6 +6,8 @@ LAST_NODE_NAME = 0
 
 
 class NamedNode(base.Node):
+    __slots__ = ("name",)
+
     def __init__(self, name: Optional[str] = None, **kwargs):
         global LAST_NODE_NAME
 
