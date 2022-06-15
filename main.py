@@ -6,8 +6,8 @@ if __name__ == "__main__":
     b_0 = 50,
     a = -0.5,
     b = 0.5,
-    r = 0.1,), 21)
-    full_tree.iter_strategy = tree.iterations.DFS()
+    r = 0.1,), 3)
+    full_tree.iter_strategy = tree.iterations.BFS()
 
     for node in full_tree:
         print(node, node.discounted_evolution)
