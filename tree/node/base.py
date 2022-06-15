@@ -14,9 +14,9 @@ class Node:
         self,
     ):
         self.node_type: NodeType = NodeType.ROOT
-        self.parent: Node = None
-        self._omega_1_child: Node = None
-        self._omega_2_child: Node = None
+        self.parent = None
+        self._omega_1_child = None
+        self._omega_2_child = None
 
     @property
     def omega_1_child(self):
