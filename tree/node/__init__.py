@@ -1,2 +1,2 @@
-from .named import NamedNode
-from .base import NodeType, Node
+from .named import NamedNode, NamedNodeFactory
+from .base import NodeType, Node, NodeFactory

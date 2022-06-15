@@ -10,5 +10,5 @@ class Tree:
         self.iter_strategy: iterations_base.BaseIterationAlgo = None
 
     def __iter__(self) -> Iterable[node_base.Node]:
-        assert self.iter_strategy is not None, "Plase provide iter strategy."
+        assert self.iter_strategy is not None, "Please provide iter strategy."
         yield from self.iter_strategy.run(self.root)

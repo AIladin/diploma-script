@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from functools import cached_property
 from typing import Iterable
 
@@ -9,13 +10,6 @@ class NodeType:
 
 
 class Node:
-    __slots__ = (
-        "node_type",
-        "parent",
-        "_omega_1_child",
-        "_omega_2_child",
-    )
-
     def __init__(
         self,
     ):
@@ -72,3 +66,9 @@ class Node:
     def children(self) -> Iterable["Node"]:
         yield self.omega_1_child
         yield self.omega_2_child
+
+
+class NodeFactory(ABC):
+    @abstractmethod
+    def create_node(self):
+        return Node()

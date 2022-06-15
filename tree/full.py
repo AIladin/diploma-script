@@ -11,7 +11,7 @@ class FullBinaryTree(base.Tree):
     @classmethod
     def _build_full_tree(
         cls,
-        node_factory: Type[node_base.Node],  # TODO define node factory base class
+        node_factory: node_base.NodeFactory,
         n_levels: int,
         root_node: Optional[node_base.Node] = None,
     ) -> node_base.Node:
@@ -23,7 +23,7 @@ class FullBinaryTree(base.Tree):
         )
 
         if root_node is None:
-            root_node = node_factory()
+            root_node = node_factory.create_node()
         pbar.update(1)
         required_nodes -= 1
 
@@ -33,12 +33,12 @@ class FullBinaryTree(base.Tree):
         while required_nodes > 0:
             current_node: node_base.Node = queue.pop()
 
-            child_1 = node_factory()
+            child_1 = node_factory.create_node()
             current_node.omega_1_child = child_1
             queue.appendleft(child_1)
             pbar.update(1)
 
-            child_2 = node_factory()
+            child_2 = node_factory.create_node()
             current_node.omega_2_child = child_2
             queue.appendleft(child_2)
             pbar.update(1)
@@ -48,7 +48,7 @@ class FullBinaryTree(base.Tree):
 
     def __init__(
         self,
-        node_factory: Type[node_base.Node],
+        node_factory: node_base.NodeFactory,
         n_levels: int,
         root_node: Optional[node_base.Node] = None,
     ):
