@@ -8,10 +8,13 @@ if __name__ == "__main__":
                                                              a = -0.5,
                                                              b = 0.5,
                                                              r = 0.1,
-                                                             payment_function=payment_functions.CallPayment(10)),
-                                                             21,
+                                                             payment_function=payment_functions.CallPayment(0)),
+                                                             2,
                                                              )
-    #full_tree.iter_strategy = tree.iterations.BFS()
+    full_tree.iter_strategy = tree.iterations.BFS()
+    print(full_tree.root.s_0 * (full_tree.root.b + full_tree.root.a + 1 - full_tree.root.r))
+    print((1 + full_tree.root.r)**(-2) * full_tree.root.s_0 * (full_tree.root.b + full_tree.root.a + 1 - full_tree.root.r))
     print(full_tree.root.fair_price)
-#    for node in full_tree:
- #       print(node, node.discounted_evolution)
+    for node in full_tree:
+        print(node, node.discounted_evolution)
+
