@@ -3,7 +3,7 @@ import pandas as pd
 from tree.node import payment_functions
 
 
-CRR_TESTS = 'data/CRR_tests.csv'
+CRR_TESTS = 'test/data/CRR_tests.csv'
 
 
 def csv_reader():
