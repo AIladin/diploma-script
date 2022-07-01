@@ -15,4 +15,4 @@ class CallPayment(BasePayment):
         self.k = k
 
     def __call__(self, s_n: float):
-        return max(0., s_n - self.k)
+        return max(0.0, s_n - self.k)

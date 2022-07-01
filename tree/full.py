@@ -15,7 +15,7 @@ class FullBinaryTree(base.Tree):
         n_levels: int,
         root_node: Optional[node_base.Node] = None,
     ) -> node_base.Node:
-        required_nodes = 2 ** (n_levels) - 1
+        required_nodes = 2 ** (n_levels + 1) - 1
 
         pbar = tqdm(
             desc=f"Buliding full binary tree with {n_levels} levels",
