@@ -49,11 +49,11 @@ class CRRNode(base.Node):
 
     @cached_property
     def psi(self):
-        p_star = (self.b - self.r) / (self.b - self.a)
+        p_star = (self.r - self.a) / (self.b - self.a)
         if self.node_type == base.NodeType.OMEGA_1:
-            return p_star  # TODO ask swapped here
-        elif self.node_type == base.NodeType.OMEGA_2:
             return 1 - p_star
+        elif self.node_type == base.NodeType.OMEGA_2:
+            return p_star
         else:
             raise ValueError("Unknown node type.")
 
