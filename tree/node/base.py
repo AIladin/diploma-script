@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from functools import cached_property
 from typing import Iterable
 
 
@@ -10,6 +9,15 @@ class NodeType:
 
 
 class Node:
+    __slots__ = (
+        "node_type",
+        "parent",
+        "_omega_1_child",
+        "_omega_2_child",
+        "iter_strategy",
+        "_level",
+    )
+
     def __init__(
         self,
     ):
@@ -17,6 +25,12 @@ class Node:
         self.parent = None
         self._omega_1_child = None
         self._omega_2_child = None
+        self.iter_strategy = None
+        self._level = None
+
+    def __iter__(self) -> Iterable["Node"]:
+        assert self.iter_strategy is not None, "Please provide iter strategy."
+        yield from self.iter_strategy.run(self)
 
     @property
     def omega_1_child(self):
@@ -44,12 +58,14 @@ class Node:
     def is_root(self):
         return self.node_type == NodeType.ROOT
 
-    @cached_property
+    @property
     def level(self) -> int:
-        if self.is_root():
-            return 0
-        else:
-            return self.parent.level + 1
+        if self._level is None:
+            if self.is_root():
+                self._level = 0
+            else:
+                self._level = self.parent.level + 1
+        return self._level
 
     def __str__(self):
         return f"{self.__class__.__name__} {str(self._dict_info())}"
@@ -62,8 +78,7 @@ class Node:
             "is_root": self.is_root(),
         }
 
-    @property
-    def children(self) -> Iterable["Node"]:
+    def iter_children(self) -> Iterable["Node"]:
         yield self.omega_1_child
         yield self.omega_2_child
 

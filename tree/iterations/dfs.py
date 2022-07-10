@@ -12,5 +12,5 @@ class DFS(base.BaseIterationAlgo):
             current_node: node_base.Node = queue.pop()
             yield current_node
             if not current_node.is_leaf():
-                for child in current_node.children:
+                for child in current_node.iter_children():
                     queue.append(child)

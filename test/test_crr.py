@@ -15,21 +15,23 @@ def csv_reader():
 
 def test_fair_price():
     for node_args, k, n, cn in csv_reader():
-        full_tree = tree.FullBinaryTree(
+        tree_builder = tree.FullBinaryTreeBuilder(
             tree.node.CRRNodeFactory(
                 *node_args, payment_function=payment_functions.CallPayment(k)
             ),
             n,
         )
-        assert np.allclose(full_tree.root.discounted_capital, cn)
+        tree_root = tree_builder.build_full_tree()
+        assert np.allclose(tree_root.discounted_capital, cn)
 
 
 def test_k_zero():
     for node_args, k, n, cn in csv_reader():
-        full_tree = tree.FullBinaryTree(
+        tree_builder = tree.FullBinaryTreeBuilder(
             tree.node.CRRNodeFactory(
                 *node_args, payment_function=payment_functions.CallPayment(0)
             ),
             n,
         )
-        assert np.allclose(full_tree.root.discounted_capital, node_args[0])
+        tree_root = tree_builder.build_full_tree()
+        assert np.allclose(tree_root.discounted_capital, node_args[0])

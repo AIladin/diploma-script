@@ -1,12 +1,11 @@
-from typing import Optional
-
 import tree.node.base as base
 
 
 class NamedNode(base.Node):
-    def __init__(self, name: Optional[str] = None, **kwargs):
+    __slots__ = ("name",)
+    def __init__(self, name: str):
         self.name = name
-        super().__init__(**kwargs)
+        super().__init__()
 
     def _dict_info(self):
         dict_info = super()._dict_info()

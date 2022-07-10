@@ -1,1 +1,1 @@
-from .full import FullBinaryTree
+from .full import FullBinaryTreeBuilder
