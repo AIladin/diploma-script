@@ -85,6 +85,11 @@ class CRRModelCalculator:
     def get_discounted_capital(self, n: int) -> np.ndarray:
         assert 0 <= n <= self.N
         stock_price_evolution = self.model.stock_price_evolution(n)
+        print(self.f(
+            self.N - n,
+            stock_price_evolution,
+            self.p_star,
+        ))
         return (1 + self.model.r) ** (n - self.N) * self.f(
             self.N - n,
             stock_price_evolution,
@@ -176,3 +181,10 @@ class CRRPlotter(CRRModelCalculator):
 
 def put_fn(x: np.ndarray, k=0) -> np.ndarray:
     return (x - k).clip(0.0)
+
+if __name__ == '__main__':
+    model = CRRModel(102, 1, -0.1, 0.33, 0.03)
+    fn = partial(put_fn, k=0)
+    calculator = CRRModelCalculator(model, fn, 3)
+    for i in range(4):
+        print(calculator.get_discounted_capital(i))
