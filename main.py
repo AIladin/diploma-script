@@ -1,4 +1,4 @@
-from functools import lru_cache
+from functools import lru_cache, partial
 from typing import Callable, Optional
 
 import numpy as np
@@ -65,7 +65,7 @@ class CRRModelCalculator:
 
     @property
     def p_star(self) -> float:
-        return (self.model.b - self.model.r) / (self.model.b - self.model.a)
+        return (self.model.r - self.model.a) / (self.model.b - self.model.a)
 
     def f(self, m: int, x: float, p: float):
         """Helper function from monography page 56."""
@@ -172,3 +172,7 @@ class CRRPlotter(CRRModelCalculator):
         ) / (
             self.model.bank_account_evolution(self.N) * (self.model.b - self.model.a)
         )
+
+
+def put_fn(x: np.ndarray, k=0) -> np.ndarray:
+    return (x - k).clip(0.0)
