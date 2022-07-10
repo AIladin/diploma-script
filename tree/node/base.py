@@ -1,5 +1,4 @@
-from abc import ABC, abstractmethod
-from typing import Iterable
+from typing import Iterable, Optional
 
 
 class NodeType:
@@ -15,7 +14,7 @@ class Node:
         "_omega_1_child",
         "_omega_2_child",
         "iter_strategy",
-        "_level",
+        "level",
     )
 
     def __init__(
@@ -26,7 +25,7 @@ class Node:
         self._omega_1_child = None
         self._omega_2_child = None
         self.iter_strategy = None
-        self._level = None
+        self.level = None
 
     def __iter__(self) -> Iterable["Node"]:
         assert self.iter_strategy is not None, "Please provide iter strategy."
@@ -58,15 +57,6 @@ class Node:
     def is_root(self):
         return self.node_type == NodeType.ROOT
 
-    @property
-    def level(self) -> int:
-        if self._level is None:
-            if self.is_root():
-                self._level = 0
-            else:
-                self._level = self.parent.level + 1
-        return self._level
-
     def __str__(self):
         return f"{self.__class__.__name__} {str(self._dict_info())}"
 
@@ -83,7 +73,36 @@ class Node:
         yield self.omega_2_child
 
 
-class NodeFactory(ABC):
-    @abstractmethod
-    def create_node(self):
-        return Node()
+class NodeFactory:
+
+    NODE_TYPE = Node
+
+    def _create_root_node(self):
+        node = self.NODE_TYPE()
+        node.level = 0
+        return node
+
+    def _create_omega_1_node(self, parent: Node) -> Node:
+        node = self.NODE_TYPE()
+        parent.omega_1_child = node
+        node.level = parent.level + 1
+        return node
+
+    def _create_omega_2_node(self, parent: Node) -> Node:
+        node = self.NODE_TYPE()
+        parent.omega_2_child = node
+        node.level = parent.level + 1
+        return node
+
+    def create_node(
+        self,
+        parent: Optional[Node] = None,
+        node_type: Optional[NodeType] = NodeType.ROOT,
+    ) -> Node:
+        if node_type == NodeType.OMEGA_1:
+            return self._create_omega_1_node(parent)
+        elif node_type == NodeType.OMEGA_2:
+            return self._create_omega_2_node(parent)
+        elif node_type == NodeType.ROOT:
+            return self._create_root_node()
+        raise ValueError("Unknown node type.")

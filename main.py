@@ -12,13 +12,13 @@ if __name__ == "__main__":
             r=0.03,
             payment_function=payment_functions.CallPayment(0),
         ),
-        3,
+        21,
     ).build_full_tree()
-    full_tree.iter_strategy = BFS()
-    for node in full_tree:
-        print(
-            node,
-            f"{node.discounted_capital=}",
-            f"{node.stock_price_evolution=}",
-            f"{node.measure=}",
-        )
+    # full_tree.iter_strategy = BFS()
+    # for node in full_tree:
+    #     print(
+    #         node,
+    #         f"{node.discounted_capital=}",
+    #         f"{node.stock_price_evolution=}",
+    #         f"{node.measure=}",
+    #     )

@@ -1,3 +1,6 @@
+from functools import cached_property
+from typing import Optional
+
 import tree.node.base as base
 
 from . import payment_functions
@@ -5,84 +8,27 @@ from . import payment_functions
 
 class CRRNode(base.Node):
     __slots__ = (
-        "s_0",
-        "b_0",
-        "a",
-        "b",
-        "r",
         "payment_function",
-        "_bank_account_evolution",
-        "_stock_price_evolution",
-        "_psi",
+        "bank_account_evolution",
+        "stock_price_evolution",
+        "psi",
+        "r",
         "_measure",
         "_discounted_capital",
     )
 
     def __init__(
         self,
-        s_0: float,
-        b_0: float,
-        a: float,
-        b: float,
-        r: float,
-        payment_function: payment_functions.BasePayment,
     ):
-        assert -1 < a < r < b
-
-        self.s_0 = s_0
-        self.b_0 = b_0
-        self.a = a
-        self.b = b
-        self.r = r
-        self.payment_function = payment_function
-
-        # vars for caching
-        self._bank_account_evolution = None
-        self._stock_price_evolution = None
-        self._psi = None
+        self.payment_function = None
+        self.bank_account_evolution = None
+        self.stock_price_evolution = None
+        self.psi = None
+        self.r = None
         self._measure = None
         self._discounted_capital = None
 
         super().__init__()
-
-    @property
-    def bank_account_evolution(self) -> float:
-        if self._bank_account_evolution is None:
-            if self.is_root():
-                self._bank_account_evolution = self.b_0
-            self._bank_account_evolution = self.parent.bank_account_evolution * (
-                1 + self.r
-            )
-        return self._bank_account_evolution
-
-    @property
-    def stock_price_evolution(self) -> float:
-        if self._stock_price_evolution is None:
-            if self.is_root():
-                self._stock_price_evolution = self.s_0
-            elif self.node_type == base.NodeType.OMEGA_1:
-                self._stock_price_evolution = self.parent.stock_price_evolution * (
-                    1 + self.a
-                )
-            elif self.node_type == base.NodeType.OMEGA_2:
-                self._stock_price_evolution = self.parent.stock_price_evolution * (
-                    1 + self.b
-                )
-            else:
-                raise ValueError("Unknown node type.")
-        return self._stock_price_evolution
-
-    @property
-    def psi(self):
-        if self._psi is None:
-            p_star = (self.r - self.a) / (self.b - self.a)
-            if self.node_type == base.NodeType.OMEGA_1:
-                self._psi = 1 - p_star
-            elif self.node_type == base.NodeType.OMEGA_2:
-                self._psi = p_star
-            else:
-                raise ValueError("Unknown node type.")
-        return self._psi
 
     @property
     def measure(self):
@@ -109,6 +55,8 @@ class CRRNode(base.Node):
 
 
 class CRRNodeFactory(base.NodeFactory):
+    NODE_TYPE = CRRNode
+
     def __init__(
         self,
         s_0: float,
@@ -127,7 +75,39 @@ class CRRNodeFactory(base.NodeFactory):
         self.r = r
         self.payment_function = payment_function
 
-    def create_node(self):
-        return CRRNode(
-            self.s_0, self.b_0, self.a, self.b, self.r, self.payment_function
-        )
+    @cached_property
+    def p_star(self):
+        return (self.r - self.a) / (self.b - self.a)
+
+    def _create_root_node(self) -> CRRNode:
+        node: CRRNode = super()._create_root_node()
+        node.payment_function = self.payment_function
+        node.bank_account_evolution = self.b_0
+        node.stock_price_evolution = self.s_0
+        node.r = self.r
+        return node
+
+    def _create_omega_1_node(self, parent: CRRNode) -> CRRNode:
+        node: CRRNode = super()._create_omega_1_node(parent)
+        node.payment_function = self.payment_function
+        node.bank_account_evolution = parent.bank_account_evolution * (1 + self.r)
+        node.stock_price_evolution = parent.stock_price_evolution * (1 + self.a)
+        node.psi = 1 - self.p_star
+        node.r = self.r
+        return node
+
+    def _create_omega_2_node(self, parent: CRRNode) -> CRRNode:
+        node: CRRNode = super()._create_omega_2_node(parent)
+        node.payment_function = self.payment_function
+        node.bank_account_evolution = parent.bank_account_evolution * (1 + self.r)
+        node.stock_price_evolution = parent.stock_price_evolution * (1 + self.b)
+        node.psi = self.p_star
+        node.r = self.r
+        return node
+
+    def create_node(
+        self,
+        parent: Optional[CRRNode] = None,
+        node_type: Optional[base.NodeType] = base.NodeType.ROOT,
+    ) -> CRRNode:
+        return super().create_node(parent, node_type)
