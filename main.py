@@ -1,10 +1,9 @@
-import tree
-from tree.iterations import BFS
-from tree.node import payment_functions
+from core import iterations, node, tree
+from core.utils import payment_functions
 
 if __name__ == "__main__":
     full_tree = tree.FullBinaryTreeBuilder(
-        tree.node.CRRNodeFactory(
+        node.CRRNodeFactory(
             s_0=102,
             b_0=1,
             a=-0.1,
@@ -12,13 +11,13 @@ if __name__ == "__main__":
             r=0.03,
             payment_function=payment_functions.CallPayment(0),
         ),
-        21,
+        3,
     ).build_full_tree()
-    # full_tree.iter_strategy = BFS()
-    # for node in full_tree:
-    #     print(
-    #         node,
-    #         f"{node.discounted_capital=}",
-    #         f"{node.stock_price_evolution=}",
-    #         f"{node.measure=}",
-    #     )
+    full_tree.iter_strategy = iterations.BFS()
+    for crr_node in full_tree:
+        print(
+            crr_node,
+            f"{crr_node.discounted_capital=}",
+            f"{crr_node.stock_price_evolution=}",
+            f"{crr_node.measure=}",
+        )

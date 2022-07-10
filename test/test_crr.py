@@ -1,8 +1,8 @@
 import numpy as np
 import pandas as pd
 
-import tree
-from tree.node import payment_functions
+from core import node, tree
+from core.utils import payment_functions
 
 CRR_TESTS = "test/data/CRR_tests.csv"
 
@@ -16,7 +16,7 @@ def csv_reader():
 def test_fair_price():
     for node_args, k, n, cn in csv_reader():
         tree_builder = tree.FullBinaryTreeBuilder(
-            tree.node.CRRNodeFactory(
+            node.CRRNodeFactory(
                 *node_args, payment_function=payment_functions.CallPayment(k)
             ),
             n,
@@ -28,7 +28,7 @@ def test_fair_price():
 def test_k_zero():
     for node_args, k, n, cn in csv_reader():
         tree_builder = tree.FullBinaryTreeBuilder(
-            tree.node.CRRNodeFactory(
+            node.CRRNodeFactory(
                 *node_args, payment_function=payment_functions.CallPayment(0)
             ),
             n,
