@@ -64,11 +64,14 @@ class CRRNode(base.Node):
         return self.psi * self.parent.measure
 
     @cached_property
-    def fair_price(self):
+    def discounted_capital(self):
         if self.is_leaf():
             return self.measure * self.payment_function(self.stock_price_evolution)
         else:
-            return self.omega_1_child.fair_price + self.omega_2_child.fair_price
+            return (
+                self.omega_1_child.discounted_capital
+                + self.omega_2_child.discounted_capital
+            ) / (1 + self.r)
 
 
 class CRRNodeFactory(base.NodeFactory):

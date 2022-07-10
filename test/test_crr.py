@@ -21,7 +21,7 @@ def test_fair_price():
             ),
             n,
         )
-        assert np.allclose(full_tree.root.fair_price / (1 + full_tree.root.r) ** n, cn)
+        assert np.allclose(full_tree.root.discounted_capital, cn)
 
 
 def test_k_zero():
@@ -32,6 +32,4 @@ def test_k_zero():
             ),
             n,
         )
-        assert np.allclose(
-            full_tree.root.fair_price / (1 + full_tree.root.r) ** n, node_args[0]
-        )
+        assert np.allclose(full_tree.root.discounted_capital, node_args[0])

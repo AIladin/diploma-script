@@ -1,5 +1,5 @@
 import tree
-import tree.iterations
+from tree.iterations import BFS
 from tree.node import payment_functions
 
 if __name__ == "__main__":
@@ -10,8 +10,10 @@ if __name__ == "__main__":
             a=-0.1,
             b=0.33,
             r=0.03,
-            payment_function=payment_functions.CallPayment(100),
+            payment_function=payment_functions.CallPayment(0),
         ),
-        5,
+        3,
     )
-    print(full_tree.root.fair_price / (1 + full_tree.root.r) ** 5)
+    full_tree.iter_strategy = BFS()
+    for node in full_tree:
+        print(node, node.discounted_capital)
